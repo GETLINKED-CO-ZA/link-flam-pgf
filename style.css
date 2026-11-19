@@ -56,3 +56,7 @@ footer{border-top:1px solid var(--line);padding:34px 0;color:var(--mute);font-si
 footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 @media(max-width:760px){.choices,.grid3,form .two{grid-template-columns:1fr}nav a{margin:0 14px 0 0}section{padding:44px 0}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+.bgmark{position:fixed;z-index:0;top:50%;left:50%;width:min(110vw,980px);max-width:none;transform:translate(-50%,-50%);opacity:.07;pointer-events:none;user-select:none;animation:drift 30s ease-in-out infinite alternate}
+@keyframes drift{from{transform:translate(-52%,-50%) rotate(-7deg) scale(1)}to{transform:translate(-48%,-53%) rotate(7deg) scale(1.06)}}
+main{position:relative;z-index:1}
+@media(prefers-reduced-motion:reduce){.bgmark{animation:none}}
