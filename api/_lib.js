@@ -1,5 +1,5 @@
 // Shared helpers. Files starting with "_" are not exposed as public URLs by Vercel.
-const formidable = require('formidable');
+const { formidable } = require('formidable');
 const fs = require('fs');
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
