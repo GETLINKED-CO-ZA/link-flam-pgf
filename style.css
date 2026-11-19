@@ -60,3 +60,15 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 @keyframes drift{from{transform:translate(-52%,-50%) rotate(-7deg) scale(1)}to{transform:translate(-48%,-53%) rotate(7deg) scale(1.06)}}
 main{position:relative;z-index:1}
 @media(prefers-reduced-motion:reduce){.bgmark{animation:none}}
+
+/* ===== Marketplace: 2-column ID cards (new) ===== */
+.fgrid{grid-template-columns:repeat(2,1fr)}
+.fcard{display:flex;flex-direction:row;align-items:center;gap:22px;padding:24px;border-radius:22px;text-decoration:none;color:#fff;animation:cardIn .7s ease backwards;animation-delay:var(--d,0s)}
+.fcard .info{flex:1;min-width:0;padding:0}
+.fcard .info h3{margin-bottom:.5em}
+.fcard .info p{font-size:.95rem;margin:10px 0 12px}
+.fcard img{width:120px;height:120px;aspect-ratio:1;flex:none;border-radius:50%;border:2px solid var(--gold)}
+.fcard .cta{color:var(--gold);font-weight:600}
+@keyframes cardIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@media(max-width:760px){.fgrid{grid-template-columns:1fr}.fcard{padding:20px;gap:16px}.fcard img{width:90px;height:90px}}
+@media(prefers-reduced-motion:reduce){.fcard{animation:none}}
