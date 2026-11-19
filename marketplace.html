@@ -11,7 +11,7 @@
 <div class="fgrid" id="grid" style="margin-top:14px"></div>
 </div></section></main>
 
-<dialog id="dlg"><form id="bk" method="dialog">
+<dialog id="dlg"><button type="button" class="xbtn" id="x" aria-label="Close">&times;</button><form id="bk" method="dialog">
 <div class="who"><img id="dp" alt=""><div><h3 id="dn" style="margin:0"></h3><span id="di" class="note"></span></div></div>
 <input type="hidden" name="freelancer_id"><input type="hidden" name="freelancer_name"><input type="hidden" name="freelancer_industry">
 <div class="two row"><div><label for="b1">Your name</label><input id="b1" name="name" required></div><div><label for="b2">Company (optional)</label><input id="b2" name="company"></div></div>
@@ -47,8 +47,10 @@ function render(){
 
 grid.onclick=e=>{const c=e.target.closest('button.fcard');if(!c)return;const f=FREELANCERS.find(x=>x.id===c.dataset.id);
  $('dp').src=photo(f);$('dp').alt=f.name;$('dn').textContent='Book '+f.name;$('di').textContent=f.industry+' · '+f.location;
- bk.freelancer_id.value=f.id;bk.freelancer_name.value=f.name;bk.freelancer_industry.value=f.industry;bk.querySelector('.msg').className='msg';dlg.showModal();};
+ bk.freelancer_id.value=f.id;bk.freelancer_name.value=f.name;bk.freelancer_industry.value=f.industry;bk.querySelector('.msg').className='msg';dlg.showModal();bk.scrollTop=0;};
 $('cl').onclick=()=>dlg.close();
+$('x').onclick=()=>dlg.close();
+dlg.onclick=e=>{if(e.target===dlg)dlg.close();};
 bk.onsubmit=e=>{e.preventDefault();submitForm(bk,'/api/booking','Request sent. Check your inbox for a confirmation. LINK will contact the freelancer and get back to you shortly.');};
 render();
 </script></body></html>
