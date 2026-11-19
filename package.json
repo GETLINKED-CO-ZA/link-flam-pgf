@@ -1,5 +1,0 @@
-{
-  "name": "link-flam",
-  "version": "1.0.0",
-  "dependencies": { "formidable": "^3.5.1" }
-}
