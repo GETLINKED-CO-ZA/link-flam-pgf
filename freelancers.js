@@ -1,7 +1,7 @@
 // One entry per freelancer folder in GitHub. Add a new object (or folder) to go live.
 // photo: paste the Vercel Blob link. rating: 1-5. remote: true = Remote, false = Local / On-site.
 const FREELANCERS=[
- {id:'willem henri',name:'Willem Henri van Loo.',industry:'Website Creator',bio:'I create a Launch ready website for your brand',location:'Remote',remote:true,rating:5,photo:'willemhenrivanloo.jpg'},
+ {id:'willem henri',name:'Willem Henri van Loo.',industry:'Website Creator',bio:'I create a Launch ready website for your brand',location:'Remote',remote:true,rating:5,photo:'willemhenrivanloo.jpeg'},
  {id:'sipho-n',name:'Sipho N.',industry:'Web Development',bio:'Fast, mobile-first websites and online stores built on modern tools.',location:'Remote',remote:true,rating:4,photo:''},
  {id:'lerato-k',name:'Lerato K.',industry:'Photography',bio:'Event, product and portrait photography across Mpumalanga and Gauteng.',location:'Mbombela (On-site)',remote:false,rating:5,photo:''},
  {id:'johan-v',name:'Johan V.',industry:'Bookkeeping',bio:'Monthly bookkeeping, VAT and payroll support for small businesses.',location:'Remote',remote:true,rating:4,photo:''},
