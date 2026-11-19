@@ -1,0 +1,22 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Get listed – LINK F.L.A.M</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=Figtree:wght@400;600&display=swap" rel="stylesheet"><link rel="stylesheet" href="style.css"></head><body><header class="site" id="site-header"></header>
+<main><section><div class="wrap" style="max-width:760px">
+<h1 style="font-size:clamp(2rem,5vw,3rem)">Get listed on LINK F.L.A.M</h1>
+<p style="margin:10px 0 28px">Freelancers anywhere in the world can apply. You keep 100% of your quoted rate. The LINK team reviews every profile by hand.</p>
+<form id="ap" enctype="multipart/form-data">
+<fieldset><legend>Private details (only LINK sees these)</legend>
+<div class="two row"><div><label for="a1">Full name</label><input id="a1" name="full_name" required autocomplete="name"></div><div><label for="a2">WhatsApp / phone</label><input id="a2" name="phone" type="tel" required></div></div>
+<div class="two row"><div><label for="a3">Email</label><input id="a3" name="email" type="email" required></div><div><label for="a4">Standard rates</label><input id="a4" name="rates" required placeholder="e.g. R450 per hour"></div></div>
+</fieldset>
+<fieldset><legend>Public profile (shown to Seekers)</legend>
+<div class="two row"><div><label for="p1">Display name</label><input id="p1" name="display_name" required></div><div><label for="p2">Industry</label><input id="p2" name="industry" required placeholder="e.g. Graphic Design"></div></div>
+<div class="row"><label for="p3">Short service description</label><textarea id="p3" name="bio" rows="4" maxlength="220" required placeholder="What you do, in a sentence or two (max 220 characters)"></textarea></div>
+<div class="two row"><div><label for="p4">Location</label><input id="p4" name="location" required placeholder="City, or Anywhere"></div><div><label for="p5">Work style</label><select id="p5" name="remote"><option>Remote</option><option>Local / on-site</option><option>Both</option></select></div></div>
+<div class="row"><label for="p6">Profile photo</label><input id="p6" name="photo" type="file" accept="image/*" required><p class="note" style="margin-top:6px">A clear, friendly headshot. Max 5 MB.</p></div>
+</fieldset>
+<button class="btn" type="submit">Submit my application</button>
+<div class="msg" role="status"></div>
+</form></div></section></main>
+<footer id="site-footer"></footer><script src="app.js"></script>
+<script>const ap=document.getElementById('ap');ap.onsubmit=e=>{e.preventDefault();
+if(ap.photo.files[0]&&ap.photo.files[0].size>5*1024*1024){const m=ap.querySelector('.msg');m.className='msg err';m.textContent='Your photo is over 5 MB. Choose a smaller image.';return;}
+submitForm(ap,'/api/apply','Application received. Check your inbox: the LINK F.L.A.M team is reviewing your profile and will be in touch.');};</script></body></html>
