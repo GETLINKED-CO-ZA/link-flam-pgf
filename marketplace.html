@@ -1,260 +1,44 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Find talent – LINK F.L.A.M</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" href="favicon.png" type="image/png"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=Figtree:wght@400;600&display=swap" rel="stylesheet"><link rel="stylesheet" href="style.css"></head><body><header class="site" id="site-header"></header>
+<main><section><div class="wrap">
+<h1 style="font-size:clamp(2rem,5vw,3rem)">Find the right freelancer</h1>
+<p style="margin-top:10px">Pick a freelancer and send a booking request. LINK confirms their availability and connects you.</p>
+<div class="filters">
+<div><label for="fi">Industry</label><select id="fi"><option value="">All industries</option></select></div>
+<div><label for="fl">Location</label><select id="fl"><option value="">Remote or on-site</option><option value="r">Remote</option><option value="l">Local / on-site</option></select></div>
+<div><label for="fs">Star rating</label><select id="fs"><option value="0">Any rating</option><option value="5">5 stars</option><option value="4">4 stars and up</option><option value="3">3 stars and up</option><option value="2">2 stars and up</option><option value="1">1 star and up</option></select></div>
+</div>
+<p id="count" class="note" aria-live="polite"></p>
+<div class="fgrid" id="grid" style="margin-top:14px"></div>
+</div></section></main>
 
+<dialog id="dlg"><form id="bk" method="dialog">
+<div class="who"><img id="dp" alt=""><div><h3 id="dn" style="margin:0"></h3><span id="di" class="note"></span></div></div>
+<input type="hidden" name="freelancer_id"><input type="hidden" name="freelancer_name"><input type="hidden" name="freelancer_industry">
+<div class="two row"><div><label for="b1">Your name</label><input id="b1" name="name" required></div><div><label for="b2">Company (optional)</label><input id="b2" name="company"></div></div>
+<div class="two row"><div><label for="b3">Email</label><input id="b3" name="email" type="email" required></div><div><label for="b4">Phone / WhatsApp</label><input id="b4" name="phone" type="tel" required></div></div>
+<div class="row"><label for="b5">Project brief</label><textarea id="b5" name="brief" rows="5" required placeholder="What do you need done, and by when?"></textarea></div>
+<p class="note">LINK will confirm availability with the freelancer before connecting you. A transparent Linking Fee is added on top of their quoted rate.</p>
+<div style="display:flex;gap:12px;margin-top:16px;flex-wrap:wrap"><button class="btn" type="submit">Send booking request</button><button class="btn ghost" type="button" id="cl">Close</button></div>
+<div class="msg" role="status"></div>
+</form></dialog>
+<script src="freelancers.js"></script>
+<footer id="site-footer"></footer><script src="app.js"></script>
 <script>
-(() => {
-  'use strict';
-
-  const MARKETPLACE_URL = 'https://getlinked.co.za';
-
-  const $ = id => document.getElementById(id);
-  const grid = $('grid');
-  const dlg = $('dlg');
-  const bk = $('bk');
-
-  if (!grid || !dlg || !bk || !Array.isArray(FREELANCERS)) {
-    console.error('LINK F.L.A.M: Required elements or freelancer data missing.');
-    return;
-  }
-
-  // Only allow safe image sources.
-  function safeImageUrl(value) {
-    if (typeof value !== 'string' || !value.trim()) return '';
-
-    // Allow safe raster data images only.
-    if (/^data:image\/(png|jpeg|webp|gif);base64,/i.test(value)) {
-      return value;
-    }
-
-    try {
-      const url = new URL(value, window.location.origin);
-
-      if (
-        url.protocol !== 'https:' &&
-        !(url.protocol === 'http:' && url.origin === window.location.origin)
-      ) {
-        return '';
-      }
-
-      return url.href;
-    } catch {
-      return '';
-    }
-  }
-
-  // Create elements without injecting user data as HTML.
-  function element(tag, className, content) {
-    const node = document.createElement(tag);
-
-    if (className) node.className = className;
-    if (content !== undefined) node.textContent = String(content);
-
-    return node;
-  }
-
-  function addTag(parent, text) {
-    parent.appendChild(element('span', 'tag', text));
-  }
-
-  // Populate industry filter safely.
-  const industries = [...new Set(
-    FREELANCERS
-      .map(f => f.industry)
-      .filter(v => typeof v === 'string' && v.trim())
-  )].sort();
-
-  industries.forEach(industry => {
-    const option = document.createElement('option');
-    option.value = industry;
-    option.textContent = industry;
-    $('fi').appendChild(option);
-  });
-
-  function createPhoto(f) {
-    const img = element('img');
-
-    img.alt = String(f.name || 'Freelancer');
-    img.loading = 'lazy';
-    img.decoding = 'async';
-
-    const source = safeImageUrl(f.photo);
-
-    if (source) {
-      img.src = source;
-    } else {
-      img.hidden = true;
-    }
-
-    return img;
-  }
-
-  function createStars(rating) {
-    const value = Math.max(0, Math.min(5, Math.floor(Number(rating) || 0)));
-
-    const stars = element('span', 'stars');
-    stars.setAttribute('role', 'img');
-    stars.setAttribute('aria-label', value + ' out of 5 stars');
-    stars.textContent = '★'.repeat(value);
-
-    const remaining = element('i');
-    remaining.textContent = '★'.repeat(5 - value);
-
-    stars.appendChild(remaining);
-
-    return stars;
-  }
-
-  // Marketplace card: opens ONLY the marketplace.
-  function createMarketplaceCard(f) {
-    const link = element('a', 'fcard');
-
-    link.href = MARKETPLACE_URL;
-    link.target = '_blank';
-    link.rel = 'noopener noreferrer';
-    link.referrerPolicy = 'no-referrer';
-
-    link.style.textDecoration = 'none';
-    link.style.color = 'inherit';
-
-    link.appendChild(createPhoto(f));
-
-    const content = element('div');
-
-    content.appendChild(element('h3', '', f.name));
-    addTag(content, f.industry);
-    addTag(content, f.remote ? 'Remote' : 'On-site');
-
-    content.appendChild(element('p', '', f.bio));
-
-    const button = element('span', 'btn', 'Get Listed');
-    button.style.display = 'inline-block';
-    button.style.marginTop = '10px';
-
-    content.appendChild(button);
-    link.appendChild(content);
-
-    return link;
-  }
-
-  // Normal freelancer card.
-  function createFreelancerCard(f) {
-    const button = element('button', 'fcard');
-
-    button.type = 'button';
-    button.dataset.id = String(f.id);
-
-    button.appendChild(createPhoto(f));
-
-    const content = element('div');
-
-    content.appendChild(element('h3', '', f.name));
-    addTag(content, f.industry);
-    addTag(content, f.remote ? 'Remote' : 'On-site');
-
-    content.appendChild(element('p', '', f.bio));
-    content.appendChild(createStars(f.rating));
-
-    const note = element('span', 'note', 'LINK rating');
-    content.appendChild(note);
-
-    button.appendChild(content);
-
-    return button;
-  }
-
-  function render() {
-    const industry = $('fi').value;
-    const location = $('fl').value;
-    const rating = Number($('fs').value) || 0;
-
-    const list = FREELANCERS.filter(f =>
-      (!industry || f.industry === industry) &&
-      (!location || (location === 'r') === Boolean(f.remote)) &&
-      Number(f.rating) >= rating
-    );
-
-    $('count').textContent =
-      list.length + (list.length === 1
-        ? ' freelancer found'
-        : ' freelancers found');
-
-    const fragment = document.createDocumentFragment();
-
-    if (list.length) {
-      list.forEach(f => {
-        if (!f || typeof f !== 'object') return;
-
-        const card = f.id === 'template'
-          ? createMarketplaceCard(f)
-          : createFreelancerCard(f);
-
-        fragment.appendChild(card);
-      });
-    } else {
-      fragment.appendChild(
-        element('p', '', 'No freelancers match these filters. Try a different industry or rating.')
-      );
-    }
-
-    grid.replaceChildren(fragment);
-  }
-
-  // Filters.
-  ['fi', 'fl', 'fs'].forEach(id => {
-    $(id).addEventListener('change', render);
-  });
-
-  // Booking dialog. Marketplace links are never handled here.
-  grid.addEventListener('click', event => {
-    const button = event.target.closest('button.fcard');
-
-    if (!button || !grid.contains(button)) return;
-
-    const freelancer = FREELANCERS.find(
-      f => String(f.id) === button.dataset.id && f.id !== 'template'
-    );
-
-    if (!freelancer) return;
-
-    $('dp').src = safeImageUrl(freelancer.photo);
-    $('dp').alt = String(freelancer.name || 'Freelancer');
-
-    $('dn').textContent = 'Book ' + freelancer.name;
-    $('di').textContent =
-      freelancer.industry + ' · ' + freelancer.location;
-
-    bk.elements.namedItem('freelancer_id').value = freelancer.id;
-    bk.elements.namedItem('freelancer_name').value = freelancer.name;
-    bk.elements.namedItem('freelancer_industry').value = freelancer.industry;
-
-    bk.querySelector('.msg').textContent = '';
-    bk.querySelector('.msg').className = 'msg';
-
-    dlg.showModal();
-  });
-
-  // Close dialog.
-  $('cl').addEventListener('click', () => {
-    dlg.close();
-  });
-
-  // Booking submission.
-  bk.addEventListener('submit', event => {
-    event.preventDefault();
-
-    if (!bk.reportValidity()) return;
-
-    if (typeof submitForm !== 'function') {
-      console.error('LINK F.L.A.M: Booking submission unavailable.');
-      return;
-    }
-
-    submitForm(
-      bk,
-      '/api/booking',
-      'Request sent. Check your inbox for a confirmation. LINK will contact the freelancer and get back to you shortly.'
-    );
-  });
-
-  render();
-
-})();
-</script>
+const $=id=>document.getElementById(id),grid=$('grid'),dlg=$('dlg'),bk=$('bk');
+[...new Set(FREELANCERS.map(f=>f.industry))].sort().forEach(i=>$('fi').add(new Option(i,i)));
+const stars=n=>`<span class="stars" role="img" aria-label="${n} out of 5 stars">${'★'.repeat(n)}<i>${'★'.repeat(5-n)}</i></span>`;
+const photo=f=>f.photo||initialsPhoto(f.name);
+function render(){
+ const i=$('fi').value,l=$('fl').value,s=+$('fs').value;
+ const list=FREELANCERS.filter(f=>(!i||f.industry===i)&&(!l||(l==='r')===f.remote)&&f.rating>=s);
+ $('count').textContent=list.length+(list.length===1?' freelancer found':' freelancers found');
+ grid.innerHTML=list.length?list.map(f=>`<button class="fcard" data-id="${f.id}"><img src="${photo(f)}" alt="${f.name}" loading="lazy"><div><h3>${f.name}</h3><span class="tag">${f.industry}</span><span class="tag">${f.remote?'Remote':'On-site'}</span><p>${f.bio}</p>${stars(f.rating)} <span class="note">LINK rating</span></div></button>`).join(''):'<p>No freelancers match these filters. Try a different industry or rating.</p>';
+}
+['fi','fl','fs'].forEach(x=>$(x).onchange=render);
+grid.onclick=e=>{const c=e.target.closest('.fcard');if(!c)return;const f=FREELANCERS.find(x=>x.id===c.dataset.id);
+ $('dp').src=photo(f);$('dp').alt=f.name;$('dn').textContent='Book '+f.name;$('di').textContent=f.industry+' · '+f.location;
+ bk.freelancer_id.value=f.id;bk.freelancer_name.value=f.name;bk.freelancer_industry.value=f.industry;bk.querySelector('.msg').className='msg';dlg.showModal();};
+$('cl').onclick=()=>dlg.close();
+bk.onsubmit=e=>{e.preventDefault();submitForm(bk,'/api/booking','Request sent. Check your inbox for a confirmation. LINK will contact the freelancer and get back to you shortly.');};
+render();
+</script></body></html>
