@@ -32,7 +32,7 @@ function render(){
  const i=$('fi').value,l=$('fl').value,s=+$('fs').value;
  const list=FREELANCERS.filter(f=>(!i||f.industry===i)&&(!l||(l==='r')===f.remote)&&f.rating>=s);
  $('count').textContent=list.length+(list.length===1?' freelancer found':' freelancers found');
-  grid.innerHTML=list.length?list.map(f=>f.id==='template'?`<a class="fcard" href="https://getlinked.co.za" style="text-decoration:none;color:inherit"><img src="${photo(f)}" alt="${f.name}" loading="lazy"><div><h3>${f.name}</h3><span class="tag">${f.industry}</span><span class="tag">${f.remote?'Remote':'On-site'}</span><p>${f.bio}</p><span class="btn" style="display:inline-block;margin-top:10px">Get Listed</span></div></a>`:`<button class="fcard" data-id="${f.id}"><img src="${photo(f)}" alt="${f.name}" loading="lazy"><div><h3>${f.name}</h3><span class="tag">${f.industry}</span><span class="tag">${f.remote?'Remote':'On-site'}</span><p>${f.bio}</p>${stars(f.rating)} <span class="note">LINK rating</span></div></button>`).join(''):'<p>No freelancers match these filters. Try a different industry or rating.</p>';
+ grid.innerHTML=list.length?list.map(f=>`<button class="fcard" data-id="${f.id}"><img src="${photo(f)}" alt="${f.name}" loading="lazy"><div><h3>${f.name}</h3><span class="tag">${f.industry}</span><span class="tag">${f.remote?'Remote':'On-site'}</span><p>${f.bio}</p>${stars(f.rating)} <span class="note">LINK rating</span></div></button>`).join(''):'<p>No freelancers match these filters. Try a different industry or rating.</p>';
 }
 ['fi','fl','fs'].forEach(x=>$(x).onchange=render);
 grid.onclick=e=>{const c=e.target.closest('.fcard');if(!c)return;const f=FREELANCERS.find(x=>x.id===c.dataset.id);
