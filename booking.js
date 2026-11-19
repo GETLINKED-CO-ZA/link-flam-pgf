@@ -1,0 +1,37 @@
+const { parse, branded, sendMail, row, table } = require('./_lib');
+
+module.exports = async (req, res) => {
+  if (req.method !== 'POST') return res.status(405).end();
+  try {
+    const { fields: f } = await parse(req);
+    if (!f.name || !f.email || !f.phone || !f.brief || !f.freelancer_name) return res.status(400).json({ error: 'Missing fields' });
+
+    const details = table([
+      row('Freelancer', `${f.freelancer_name} (${f.freelancer_industry})`),
+      row('Freelancer ID', f.freelancer_id),
+      row('Seeker', f.name), row('Company', f.company || '-'),
+      row('Email', f.email), row('Phone', f.phone),
+      row('Project brief', f.brief)
+    ]);
+
+    // 1. To LINK
+    await sendMail({
+      to: process.env.LINK_EMAIL,
+      replyTo: f.email,
+      subject: `New booking request: ${f.freelancer_name}`,
+      html: branded('New booking request', details + '<p>Next: confirm the freelancer is available, then connect them.</p>')
+    });
+    // 2. Branded copy to the Seeker
+    await sendMail({
+      to: f.email,
+      subject: 'We received your LINK F.L.A.M booking request',
+      html: branded(`Thanks, ${f.name.split(' ')[0]}`,
+        `<p>We have your request for <b style="color:#ffffff">${f.freelancer_name}</b>. LINK will confirm their availability and then connect you both.</p>${details}`)
+    });
+    res.status(200).json({ ok: true });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'Could not send' });
+  }
+};
+module.exports.config = { api: { bodyParser: false } };
