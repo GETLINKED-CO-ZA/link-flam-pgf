@@ -30,7 +30,7 @@ const FREELANCERS = [
     location: 'Remote',
     remote: true,
     rating: 5,
-    photo: 'images/willemhenrivannloo.jpg'
+    photo: 'images/willemhenrivanloo.jpg'
   },
   {
     id: 'diederik-n',
