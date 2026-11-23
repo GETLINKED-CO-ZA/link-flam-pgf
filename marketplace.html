@@ -13,19 +13,21 @@
 
 <dialog id="dlg"><button type="button" class="xbtn" id="x" aria-label="Close">&times;</button><form id="bk" method="dialog">
 <div class="who"><img id="dp" alt=""><div><h3 id="dn" style="margin:0"></h3><span id="di" class="note"></span></div></div>
+<div class="hp" aria-hidden="true"><label>Leave this empty<input name="website" tabindex="-1" autocomplete="off"></label></div>
 <input type="hidden" name="freelancer_id"><input type="hidden" name="freelancer_name"><input type="hidden" name="freelancer_industry">
 <div class="two row"><div><label for="b1">Your name</label><input id="b1" name="name" required></div><div><label for="b2">Company (optional)</label><input id="b2" name="company"></div></div>
 <div class="two row"><div><label for="b3">Email</label><input id="b3" name="email" type="email" required></div><div><label for="b4">Phone / WhatsApp</label><input id="b4" name="phone" type="tel" required></div></div>
 <div class="row"><label for="b5">Project brief</label><textarea id="b5" name="brief" rows="5" required placeholder="What do you need done, and by when?"></textarea></div>
 <p class="note">LINK will confirm availability with the freelancer before connecting you. A transparent Linking Fee is added on top of their quoted rate.</p>
+<div class="consent"><input type="checkbox" id="b6" name="consent" value="yes" required><label for="b6">I agree to GET LINK (PTY) LTD storing and using my details to process this request, as explained in the <a href="privacy.html" target="_blank">Privacy Notice</a>.</label></div>
 <div style="display:flex;gap:12px;margin-top:16px;flex-wrap:wrap"><button class="btn" type="submit">Send booking request</button><button class="btn ghost" type="button" id="cl">Close</button></div>
 <div class="msg" role="status"></div>
 </form></dialog>
 <script src="freelancers.js"></script>
-<footer id="site-footer"></footer><script src="app.js"></script>
+<footer id="site-footer"></footer><script src="app.js"></script><script src="extras.js"></script>
 <script>
 const $=id=>document.getElementById(id),grid=$('grid'),dlg=$('dlg'),bk=$('bk');
-[...new Set(FREELANCERS.map(f=>f.industry))].sort().forEach(i=>$('fi').add(new Option(i,i)));
+[...new Set(FREELANCERS.filter(f=>f.id!=='template').map(f=>f.industry))].sort().forEach(i=>$('fi').add(new Option(i,i)));
 const stars=n=>`<span class="stars" role="img" aria-label="${n} out of 5 stars">${'★'.repeat(n)}<i>${'★'.repeat(5-n)}</i></span>`;
 const photo=f=>f.photo||initialsPhoto(f.name);
 
@@ -39,9 +41,11 @@ function card(f,n){
 
 function render(){
  const i=$('fi').value,l=$('fl').value,s=+$('fs').value;
- const list=FREELANCERS.filter(f=>(!i||f.industry===i)&&(!l||(l==='r')===f.remote)&&f.rating>=s);
- $('count').textContent=list.length+(list.length===1?' freelancer found':' freelancers found');
- grid.innerHTML=list.length?list.map(card).join(''):'<p>No freelancers match these filters. Try a different industry or rating.</p>';
+ const real=FREELANCERS.filter(f=>f.id!=='template'&&(!i||f.industry===i)&&(!l||(l==='r')===f.remote)&&f.rating>=s);
+ const tpl=FREELANCERS.filter(f=>f.id==='template');
+ $('count').textContent=real.length+(real.length===1?' freelancer found':' freelancers found');
+ const none=real.length?'':'<p style="grid-column:1/-1">No freelancers match these filters. Try a different industry or rating.</p>';
+ grid.innerHTML=none+real.concat(tpl).map(card).join('');
 }
 ['fi','fl','fs'].forEach(x=>$(x).onchange=render);
 
