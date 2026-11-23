@@ -5,7 +5,7 @@ const fs = require('fs');
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 async function parse(req) {
-  const form = formidable({ maxFileSize: 3 * 1024 * 1024 });
+  const form = formidable({ maxFileSize: 3 * 1024 * 1024, maxTotalFileSize: 4 * 1024 * 1024, allowEmptyFiles: true, minFileSize: 0 });
   const [f, files] = await form.parse(req);
   const fields = {};
   for (const k in f) fields[k] = f[k][0];
@@ -32,7 +32,7 @@ async function sendMail({ to, subject, html, replyTo, attachment }) {
     htmlContent: html
   };
   if (replyTo) body.replyTo = { email: replyTo };
-  if (attachment) body.attachment = [attachment];
+  if (attachment) body.attachment = Array.isArray(attachment) ? attachment : [attachment];
   const r = await fetch('https://api.brevo.com/v3/smtp/email', {
     method: 'POST',
     headers: { 'api-key': process.env.BREVO_API_KEY, 'content-type': 'application/json', accept: 'application/json' },

@@ -14,11 +14,24 @@
 <div class="two row"><div><label for="p4">Location</label><input id="p4" name="location" required placeholder="City, or Anywhere"></div><div><label for="p5">Work style</label><select id="p5" name="remote"><option>Remote</option><option>Local / on-site</option><option>Both</option></select></div></div>
 <div class="row"><label for="p6">Profile photo</label><input id="p6" name="photo" type="file" accept="image/*" required><p class="note" style="margin-top:6px">A clear, friendly headshot. Max 3 MB.</p></div>
 </fieldset>
+<fieldset><legend>Portfolio (optional, only LINK sees this)</legend>
+<div class="row"><label for="q1">Portfolio link</label><input id="q1" name="portfolio_url" type="url" placeholder="https://yourportfolio.com"></div>
+<div class="row"><label for="q2">Portfolio document</label><input id="q2" name="portfolio_file" type="file" accept=".pdf,.doc,.docx,.ppt,.pptx,.jpg,.jpeg,.png"><p class="note" style="margin-top:6px">PDF, Word, PowerPoint or an image. Max 2 MB. For anything bigger, share a link above instead.</p></div>
+</fieldset>
 <div class="consent"><input type="checkbox" id="p7" name="consent" value="yes" required><label for="p7">I agree to GET LINK (PTY) LTD storing my details and showing my public profile (display name, photo, industry, description, location and work style) on the marketplace, as explained in the <a href="privacy.html" target="_blank">Privacy Notice</a>.</label></div>
 <button class="btn" type="submit">Submit my application</button>
 <div class="msg" role="status"></div>
 </form></div></section></main>
 <footer id="site-footer"></footer><script src="app.js"></script><script src="extras.js"></script>
-<script>const ap=document.getElementById('ap');ap.onsubmit=e=>{e.preventDefault();
-if(ap.photo.files[0]&&ap.photo.files[0].size>3*1024*1024){const m=ap.querySelector('.msg');m.className='msg err';m.textContent='Your photo is over 3 MB. Choose a smaller image.';return;}
-submitForm(ap,'/api/apply','Application received. Check your inbox: the LINK F.L.A.M team is reviewing your profile and will be in touch.');};</script></body></html>
+<script>const ap=document.getElementById('ap');
+ap.onsubmit=e=>{e.preventDefault();
+const m=ap.querySelector('.msg'),err=t=>{m.className='msg err';m.textContent=t;};
+const ph=ap.photo.files[0],dc=ap.portfolio_file.files[0],MB=1024*1024;
+if(ph&&ph.size>3*MB)return err('Your photo is over 3 MB. Choose a smaller image.');
+if(dc){
+ if(!/\.(pdf|docx?|pptx?|jpe?g|png)$/i.test(dc.name))return err('Your portfolio document must be a PDF, Word, PowerPoint or image file.');
+ if(dc.size>2*MB)return err('Your portfolio document is over 2 MB. Choose a smaller file, or share a link instead.');
+}
+if(ph&&dc&&ph.size+dc.size>4*MB)return err('Your photo and document together are over 4 MB. Please use smaller files.');
+submitForm(ap,'/api/apply','Application received. Check your inbox: the LINK F.L.A.M team is reviewing your profile and will be in touch.');};
+</script></body></html>
