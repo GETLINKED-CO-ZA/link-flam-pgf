@@ -30,7 +30,7 @@ const FREELANCERS = [
     location: 'Nelspruit',
     remote: false,
     rating: 3,
-    photo: 'images/marindavdb.jpg'
+    photo: 'images/marindavdb.png'
   },
   {
     id: 'willem-henri',
