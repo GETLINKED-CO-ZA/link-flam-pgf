@@ -22,6 +22,7 @@ const FREELANCERS = [
     rating: 4,
     photo: 'images/sasha.jpg'
   },
+   {id:'marinda-v',name:'Marinda V.',industry:'Sweet Little Things. (Baking & Sewing)',bio:Sweet creations, savoury platters and homemade favourites for every occasion! From custom cakes and koeksisters to cheesecakes, plus all your sewing needs, from buttons to bespoke outfits.',location:'Nelspruit',remote:false,rating:3,photo:'images/marindavdb'},
   {
     id: 'willem-henri',
     name: 'Willem Henri v L.',
